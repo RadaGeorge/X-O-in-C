@@ -1,0 +1,1232 @@
+    #include<stdio.h>
+    #include<stdlib.h>
+    #include<stdbool.h>
+    #include<conio.h>
+    #include<time.h> //pentru a pute genera numere random
+
+    #define player_1 'X'
+    #define player_2 'O'
+
+
+    short game_type_choice( short game_type);
+
+    void player_order_change();
+
+    short choice_difficulty();
+
+    void blackboard();
+
+    bool cell_is_free(int cell);
+
+    int char_to_int(char choice);
+
+    void player_placement(int cell);
+
+    void player_change();
+
+    bool check_game_finished();
+
+    bool winner_line();
+
+    bool column_winner();
+
+    bool diagonal_winner();
+
+    bool all_boxes_full();
+
+    int search_empty_cells(int l1, int l2, int l3, int c1, int c2, 
+                           int c3,int d1,int d2);
+
+    bool difficulty_1(int line_check, int column_check, int check_diagonal1, 
+                    int check_diagonal2, short alternative);
+
+    bool difficulty_2(int line_check, int column_check, int check_diagonal1, 
+                    int check_diagonal2, short alternative);
+
+    bool difficulty_3(int line_check, int column_check, int check_diagonal1, 
+                    int check_diagonal2, short alternative);
+
+    bool alternative_1(int l1, int c1, int d1);
+
+    bool alternative_2(int l1, int c2);
+
+    bool alternative_3(int l1, int c3, int d2);
+
+    bool alternative_4(int l2, int c1);
+
+    bool alternative_5(int l2, int c2, int d1, int d2);
+
+    bool alternative_6(int l2, int c3);
+
+    bool alternative_7(int l3, int c1, int d2);
+
+    bool alternative_8(int l3, int c2);
+
+    bool alternative_9(int l3, int c3, int d1);
+
+    bool winning_movement_verification(int line_check, int column_check, int check_diagonal1, int check_diagonal2);
+
+    bool winning_countermovement_X(int line_check, int column_check, int check_diagonal1, int check_diagonal2);
+
+    bool verify_existence_O(int line_check, int column_check, int check_diagonal1, int check_diagonal2);
+                              
+    bool check_everything_empty (int line_check, int column_check, int check_diagonal1, int check_diagonal2);
+                            
+    int reserve_decision();
+
+
+
+    char g_blackboard[3][3] =
+{
+   {'1','2','3'},
+   {'4','5','6'},
+   {'7','8','9'},
+
+};
+
+  
+    short g_contor = 1;
+
+    int g_difficulty = 3;
+
+    char g_player = player_1;
+
+    bool g_castigator = false;
+
+    bool g_sfarsitul_joc = false;
+
+
+    int main(void)
+{
+	  bool is_game_over = false;
+
+	  char choice;
+
+    int cell;
+
+    short l1 =0;
+
+    short l2= 0;
+
+    short l3= 0;
+
+    short c1 = 0;
+
+    short c2 = 0;
+
+    short c3 = 0;
+
+    short d1 = 0;
+
+    short d2 = 0;
+
+    short game_type = 0;
+
+    srand(time(NULL));
+
+    game_type = game_type_choice(game_type);
+
+    player_order_change();
+
+    if ( game_type == 1)
+      {
+        g_difficulty = choice_difficulty();
+
+        do
+          {
+            l1 =  g_blackboard[0][0] + g_blackboard[0][1] + g_blackboard[0][2]; 
+
+            l2 =  g_blackboard[1][0] + g_blackboard[1][1] + g_blackboard[1][2]; 
+
+            l3 =  g_blackboard[2][0] + g_blackboard[2][1] + g_blackboard[2][2]; 
+    
+            c1 =  g_blackboard[0][0] + g_blackboard[1][0] + g_blackboard[2][0]; 
+
+            c2 =  g_blackboard[0][1] + g_blackboard[1][1] + g_blackboard[2][1]; 
+            
+            c3 =  g_blackboard[0][2] + g_blackboard[1][2] + g_blackboard[2][2]; 
+            
+            d1 =  g_blackboard[0][0] + g_blackboard[1][1] + g_blackboard[2][2]; 
+            
+            d2 =  g_blackboard[0][2] + g_blackboard[1][1] + g_blackboard[2][0];
+
+            
+  
+            blackboard();
+
+            if(g_player == player_1)
+                {
+                    printf(" %c Alege cell : ",g_player);
+
+                    choice = getch();   // scanf(" %c",&choice );
+
+                    cell = char_to_int(choice) - 1; // scadem 0 ca numerotatia in tapel pleaca de la 0 asa 1 va fi 0
+
+
+                    l1 =  g_blackboard[0][0] + g_blackboard[0][1] + g_blackboard[0][2]; 
+
+                    l2 =  g_blackboard[1][0] + g_blackboard[1][1] + g_blackboard[1][2]; 
+
+                    l3 =  g_blackboard[2][0] + g_blackboard[2][1] + g_blackboard[2][2]; 
+            
+                    c1 =  g_blackboard[0][0] + g_blackboard[1][0] + g_blackboard[2][0]; 
+
+                    c2 =  g_blackboard[0][1] + g_blackboard[1][1] + g_blackboard[2][1]; 
+                   
+                    c3 =  g_blackboard[0][2] + g_blackboard[1][2] + g_blackboard[2][2]; 
+                   
+                    d1 =  g_blackboard[0][0] + g_blackboard[1][1] + g_blackboard[2][2]; 
+                    
+                    d2 =  g_blackboard[0][2] + g_blackboard[1][1] + g_blackboard[2][0];
+
+
+                        if(cell_is_free(cell)) // daca cell este libara
+                            {
+                                player_placement(cell);// plasare
+
+                                blackboard();
+
+                                is_game_over = check_game_finished();
+       
+                                player_change();// dam controlul la P urmator 
+                            }
+                  }
+                
+
+               if(g_player == player_2 )
+                {
+                  
+
+                    l1 =  g_blackboard[0][0] + g_blackboard[0][1] + g_blackboard[0][2]; 
+
+                    l2 =  g_blackboard[1][0] + g_blackboard[1][1] + g_blackboard[1][2]; 
+
+                    l3 =  g_blackboard[2][0] + g_blackboard[2][1] + g_blackboard[2][2]; 
+            
+                    c1 =  g_blackboard[0][0] + g_blackboard[1][0] + g_blackboard[2][0]; 
+
+                    c2 =  g_blackboard[0][1] + g_blackboard[1][1] + g_blackboard[2][1]; 
+                   
+                    c3 =  g_blackboard[0][2] + g_blackboard[1][2] + g_blackboard[2][2]; 
+                   
+                    d1 =  g_blackboard[0][0] + g_blackboard[1][1] + g_blackboard[2][2]; 
+                    
+                    d2 =  g_blackboard[0][2] + g_blackboard[1][1] + g_blackboard[2][0];
+
+
+                    choice = search_empty_cells(l1, l2, l3, c1, c2, c3, d1, d2);
+
+                    cell = char_to_int(choice) - 1;
+
+                    if(cell_is_free(cell)) // daca cell este libara
+                        {     
+                            player_placement(cell);// plasare
+
+                            blackboard();
+
+                            is_game_over = check_game_finished();
+     
+                            player_change();// dam controlul la P urmator 
+     
+                        }
+
+                }
+
+        } while (!is_game_over); 
+     
+    }
+
+    if(game_type == 2)
+    {
+	    do
+	    {
+            blackboard();
+
+            printf(" %c Alege cell : ",g_player);
+
+            choice = getch();
+    
+            cell = char_to_int(choice) - 1; // scadem 0 ca numerotatia in tapel pleaca de la 0 asa 1 va fi 0
+
+                if(cell_is_free(cell)) // daca cell este libara
+                    {
+    	                player_placement(cell);// plasare
+
+    	                blackboard();
+
+                        is_game_over = check_game_finished();// verificare sfarsit joc
+
+    	                player_change();// dam controlul la P urmator 
+                    }
+
+	    }while(!is_game_over);
+
+    }
+
+   printf(" GAME OVER");
+
+    return 0;
+
+}
+
+    short game_type_choice(short game_type)
+{
+   system("cls");
+
+   printf(" \r\n\r\n        Choice of game type\r\n ");
+
+   printf(" \r\n          For : 1 Player press 1");
+
+   printf(" \r\n              : 2 Player press 2\n");
+
+   scanf(" %d",&game_type);
+
+   return game_type;
+}
+
+void player_order_change()
+ {
+    int choice_ordine = 0;
+
+     printf("\r\n        First move O press : 1 \r\n");
+
+     printf("            First move X press : 0 \r\n");
+
+     scanf(" %d",&choice_ordine);
+
+     if(choice_ordine == 1)
+     {
+         g_player = player_2 ;
+     }
+ }
+
+    short choice_difficulty()
+{
+  system("cls");
+
+   printf(" \r\n\r\n        Choose the difficulty !\r\n ");
+
+   printf(" \r\n          For : Easy press  1\n");
+
+   printf(" \r\n              : Medium press 2\n");
+
+   printf(" \r\n              : Hard press  3\n");
+
+   scanf(" %d",&g_difficulty);
+
+
+    return g_difficulty;
+}
+
+    void blackboard()
+{
+   system("cls");                 
+
+  printf(" \n\n\n\n\n\n");
+  printf("                                       |   |   \n");
+  printf("                                     %c | %c | %c \n",g_blackboard[2][0],g_blackboard[2][1],g_blackboard[2][2]);
+  printf("                                    ___|___|___\n");
+  printf("                                       |   |   \n");
+  printf("                                     %C | %c | %c \n",g_blackboard[1][0],g_blackboard[1][1],g_blackboard[1][2]);
+  printf("                                    ___|___|___\n");
+  printf("                                       |   |   \n");
+  printf("                                     %c | %c | %c \n",g_blackboard[0][0],g_blackboard[0][1],g_blackboard[0][2]);
+  printf("                                       |   |   \n");
+  printf("\n");
+}
+   int char_to_int(char choice)
+{
+    return choice - 48; // scade din valoarea alegeti ca chear 48 valoarea 
+                         // 0 tabelul ASCII si rezulta un int
+}
+
+   bool cell_is_free(int cell)
+   {
+   	   // 0 = 0 0
+   	   // 1 = 0 1
+   	   // 2 = 0 2
+
+   	   // 3 = 1 0
+   	   // 4 = 1 1
+   	   // 5 = 1 2
+
+   	   // 6 = 2 0
+   	   // 7 = 2 1 
+   	   // 8 = 2 2
+      int row = cell / 3;// rez va da nr row 
+
+      int column = cell % 3;// restul inpartiri va da numarul celulei
+
+      bool free;
+
+      free = (g_blackboard[row][column] != player_1 && g_blackboard[row][column] != player_2  );
+
+          return free;
+   }
+
+   void player_placement(int cell)
+   {
+      int row = cell / 3;
+      int column = cell % 3;
+
+      g_blackboard[row][column] = g_player;
+
+   }
+
+   void player_change()
+   {
+   	if(g_player == player_1)
+   	{
+   		g_player = player_2 ;
+   	}
+      else{g_player = player_1;}
+
+   }
+
+    bool check_game_finished()
+  {
+   	bool it_s_over = winner_line() ||  
+   	                               column_winner() || 
+   	                                     diagonal_winner() ||
+   	                                           all_boxes_full();
+
+           
+  }
+
+    bool winner_line()
+    {  
+    	int i;
+
+    	for(i=0; i < 3; i++)
+    	{
+    		if (g_blackboard[i][0] == g_blackboard[i][1] && 
+    		    g_blackboard[i][1] == g_blackboard[i][2])
+    		{
+    			printf("%c a castigat pe randul %d\n",g_player, i + 1 );
+    			    return true;
+    		}
+    		   
+    	}
+    return false;
+}
+
+    bool column_winner()
+{
+    int i;
+    	for(i= 0; i<3; i++ )
+    	{
+    		if (g_blackboard[0][i] == g_blackboard[1][i] && 
+    		    g_blackboard[1][i] == g_blackboard[2][i])
+    		{
+    			printf("%c a castigat pe randul %d\n",g_player, i + 1 );
+    			    return true;
+    		}
+    		  
+    	}
+    	 return false;
+}
+     bool diagonal_winner()
+{
+     // verificarea diagonalei principale 
+	if(g_blackboard[0][0] == g_blackboard[1][1] &&
+	    g_blackboard[1][1] == g_blackboard[2][2])
+	{
+		printf(" %c a castigat pe diagonala principala\n",g_player);
+		  return true;
+	}
+	 // verificarea diagonalei secundara
+	if(g_blackboard[0][2] == g_blackboard[1][1] &&
+	    g_blackboard[1][1] == g_blackboard[2][0])
+	{
+		printf(" %c a castigat pe diagonala secundara\n",g_player);
+
+		return true;
+	}
+	return false;
+}
+  
+    bool all_boxes_full()
+{
+  	int r;
+
+  	int c;
+
+  	for(r=0; r<3; r++)
+  		{ 
+           for(c = 0; c < 3; c++)
+           {
+           	if ( g_blackboard[r][c] != player_1 && g_blackboard[r][c] != player_2 )
+
+           	{  
+           		return false; 
+             }
+           }
+
+
+  		}
+          return true;
+  }
+    int search_empty_cells(int l1, int l2, int l3, int c1, int c2, 
+                        int c3,int d1,int d2)
+{
+    int cell;
+
+    short r, c, t,  b;
+
+    int e = 0;
+
+    t = 0;
+  
+    short cells[t];
+
+    bool finished = false;
+
+
+
+
+    for(r = 0; r < 3; r++)
+    {
+      for( c = 0; c < 3; c++)
+        {
+          e++;
+
+            if(g_blackboard[r][c] != player_1 && g_blackboard[r][c] != player_2 )
+               {
+                cells[t] = e;
+
+                t++;
+              }
+        }
+    }
+
+        
+      do
+      {
+        
+
+        for (b = 0; b < t; b++)
+          {
+            switch(cells[b]) 
+             {
+              case 1:
+                
+                  if (alternative_1(l1, c1, d1))
+                  {
+                    cell = cells[b];
+
+                    finished = true;
+                   
+                  }
+                   break;
+              case 2:
+
+                  if (alternative_2(l1, c2))
+                  {
+                    cell = cells[b];
+
+                    finished = true;
+                  
+                  }
+                   break;
+              case 3:
+                    
+                  if (alternative_3(l1, c3, d2))
+                  {
+                    cell = cells[b];
+
+                    finished = true;
+                  }
+                   break;
+              case 4:
+              
+                  if (alternative_4(l2, c1)) 
+                  {
+                    
+                    cell = cells[b];
+
+                    finished = true;
+                  }
+                   break;
+              case 5:
+              
+                  if (alternative_5(l2, c2, d1, d2))
+                  {
+                   
+                    cell = cells[b];
+
+                    finished = true;
+                   
+                  }
+                   break;
+              case 6:
+                  if (alternative_6(l2, c3)) 
+                  {
+                    
+                    cell = cells[b];
+
+                    finished = true;
+                 
+                  }
+                  break;
+              case 7:
+                  if (alternative_7(l3, c1, d2))
+                  {
+                    cell = cells[b];
+
+                    finished = true;
+                  }
+                   break;
+              case 8:
+                  if (alternative_8(l3, c2)) 
+                  {
+                    
+                    cell = cells[b];
+
+                    finished = true;
+                  
+                  }
+
+                   break;
+              case 9:
+                  if (alternative_9(l3, c3, d1))
+                  { 
+                    
+                    cell = cells[b];
+
+                    finished = true;
+                  
+                  }
+                   break;
+                         
+             }
+          }
+
+    g_contor++;
+
+    if(g_contor == 5)
+    {
+       cell = reserve_decision();
+
+       finished = true;
+    }
+
+   }while(!finished);
+
+    return cell + 48;
+}
+
+  bool alternative_1(int l1, int c1, int d1 )
+  { 
+    
+
+    short alternative = 1;
+    
+    int column_check = c1 - 49 +  79; 
+
+    int line_check = l1 - 49 +  79;
+
+    int check_diagonal1 = d1 - 49 +  79;
+
+    int check_diagonal2 = 0;
+
+    bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+     
+
+    switch (g_difficulty)
+    {
+    case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      
+      break;
+          
+    }
+
+    
+    return result;
+}
+
+ bool alternative_2(int l1, int c2)
+ {
+  int alternative = 2;
+
+  int line_check = l1 - 50 +  79;
+
+  int column_check = c2 - 50 +  79;
+
+  int check_diagonal1 = 0;
+
+  int check_diagonal2 = 0;
+
+  bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+     
+
+    switch (g_difficulty)
+    {
+    case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+          
+    }
+
+    
+    return result;
+
+
+ }
+
+ bool alternative_3(int l1, int c3, int d2)
+ {
+ int alternative = 3;
+
+ int line_check = l1 - 51 +  79;
+
+ int column_check = c3 - 51 +  79;
+
+ int check_diagonal1 = 0;
+
+ int check_diagonal2 = d2 - 51 +  79; 
+
+ bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+     
+
+    switch (g_difficulty)
+    {
+    case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+          
+    }
+  } 
+
+ bool alternative_4(int l2, int c1)
+ {
+ int alternative = 4;
+
+ int line_check = l2 - 52 +  79;
+
+ int column_check = c1 - 52 +  79;
+
+ int check_diagonal1 = 0;
+
+ int check_diagonal2 = 0; 
+
+ bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+     
+
+    switch (g_difficulty)
+    {
+      case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+      case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+      case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+          
+    }
+
+ }
+
+ bool alternative_5(int l2, int c2, int d1, int d2)
+ {
+  int alternative = 5;
+
+  int line_check = l2 - 53 +  79;
+
+  int column_check = c2 - 53 +  79;
+
+  int check_diagonal1 = d1 - 53 +  79;
+
+  int check_diagonal2 = d2 - 53 +  79;
+
+  bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+
+    switch (g_difficulty)
+      {
+      case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+      case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+      case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+          
+    }
+ }
+
+ bool alternative_6(int l2, int c3)
+ {
+  int alternative = 6;
+
+  int line_check = l2 - 54 +  79;
+
+  int column_check = c3 - 54 +  79;
+
+  int check_diagonal1 = 0;
+
+  int check_diagonal2 = 0; 
+
+  bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+     
+
+    switch (g_difficulty)
+    {
+    case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+          
+    }
+
+ }
+
+ bool alternative_7(int l3, int c1, int d2)
+ {
+  int alternative = 7;
+
+  int line_check = l3 - 55 +  79;
+
+  int column_check = c1 - 55 +  79;
+
+  int check_diagonal1 = 0;
+
+  int check_diagonal2 = d2 - 55 +  79;
+
+  bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+     
+  switch (g_difficulty)
+    {
+    case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+
+       
+      break;
+          
+    }
+}
+
+ bool alternative_8(int l3, int c2)
+ {
+  int alternative = 8;
+
+  int line_check = l3 - 56 +  79;
+
+  int column_check = c2 - 56 +  79;
+
+  int check_diagonal1 = 0;
+
+  int check_diagonal2 = 0;
+
+  bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+     
+  switch (g_difficulty)
+    {
+    case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+
+      
+      break;
+
+    case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    }
+ }
+
+ bool alternative_9(int l3, int c3, int d1)
+{
+  int alternative = 9;
+
+  int line_check = l3 - 57 +  79;
+
+  int column_check = c3 - 57 +  79;
+
+  int check_diagonal1 = d1 - 57 +  79;
+
+  int check_diagonal2 = 0;
+
+  bool result = false;
+
+    if(g_contor > 5 )
+    {
+      g_contor = 0;
+    }
+     
+  switch (g_difficulty)
+    {
+    case 1:
+      result = difficulty_1(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 2: 
+      result = difficulty_2(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    case 3:
+      result = difficulty_3(line_check, column_check, check_diagonal1, 
+                                check_diagonal2, alternative);
+      break;
+
+    }
+}
+
+  bool difficulty_1(int line_check, int column_check, int check_diagonal1, 
+                      int check_diagonal2, short alternative)
+  {
+     bool result = false;
+
+    switch(g_contor)
+    {
+
+      case 1:
+
+        result = winning_movement_verification(column_check, check_diagonal1, 
+                                                    line_check, check_diagonal2);
+        break; 
+      
+      case 2:
+
+        result = verify_existence_O(column_check, check_diagonal1, 
+                                          line_check, check_diagonal2);
+        break;
+      
+      case 3:
+
+        result = check_everything_empty(column_check, check_diagonal1, 
+                                        line_check, check_diagonal2);
+        break;
+
+    }  
+
+  if(result == true )
+    {
+      g_contor = 0;
+    } 
+
+   return result;
+ }
+
+  bool difficulty_2(int line_check, int column_check, int check_diagonal1, 
+                      int check_diagonal2, short alternative)
+  {
+   bool result = false;
+    
+
+    switch(g_contor)
+    {
+
+      case 1:
+
+        result = winning_movement_verification(column_check, check_diagonal1, 
+                                                    line_check, check_diagonal2);
+        break;
+
+      case 2:
+
+        result = winning_countermovement_X(column_check, check_diagonal1, 
+                                                  line_check, check_diagonal2);
+        break;
+      
+      case 3:
+
+        result = verify_existence_O(column_check, check_diagonal1, 
+                                          line_check, check_diagonal2);
+       break;
+      
+      case 4:
+
+        result = check_everything_empty(column_check, check_diagonal1, 
+                                        line_check, check_diagonal2);
+        break;
+    }
+        
+  if(result == true )
+    {
+      g_contor = 0;
+    }
+
+    return result;
+
+ } 
+
+    bool difficulty_3(int line_check, int column_check, int check_diagonal1, 
+                      int check_diagonal2, short alternative)
+{
+    bool result = false;
+    
+
+    switch(g_contor)
+    {
+
+      case 1:
+
+        result = winning_movement_verification(column_check, check_diagonal1, 
+                                                    line_check, check_diagonal2);
+        break;
+
+      case 2:
+
+        result = winning_countermovement_X(column_check, check_diagonal1, 
+                                                  line_check, check_diagonal2);
+        break;
+      
+      case 3:
+
+        result = verify_existence_O(column_check, check_diagonal1, 
+                                          line_check, check_diagonal2);
+        break;
+
+      case 4:
+
+        if (alternative == 1 || alternative == 3 || alternative == 7 || alternative == 9)
+        {
+          result = true;
+        }
+      
+      case 5:
+
+        result = check_everything_empty ( column_check, check_diagonal1, 
+                                        line_check, check_diagonal2);
+        break;
+    }
+        
+  if(result == true )
+    {
+      g_contor = 0;
+    } 
+
+  return result;
+} 
+
+    bool winning_movement_verification(int line_check, int column_check, int check_diagonal1, 
+                      int check_diagonal2)
+{
+  bool result = false;
+
+  const short checks_1 = 237;
+
+  int suma[4] = {column_check, check_diagonal1, line_check, check_diagonal2};
+
+  int a;
+
+    for(a = 0; a < 4; a++)
+    {
+      if(checks_1 == suma[a])
+      {
+        result  = true;
+      }
+    }
+      
+    return result;
+}
+
+  bool winning_countermovement_X(int line_check, int column_check, int check_diagonal1, 
+                      int check_diagonal2)
+{
+
+  bool result = false;
+
+  const short checks_2 = 255;
+
+  int suma[4] = {column_check, check_diagonal1, line_check, check_diagonal2};
+
+  int a;
+
+    for(a = 0; a < 4; a++)
+    {
+      if(checks_2 == suma[a])
+      {
+        result  = true;
+      }
+    }
+
+    return result;
+}
+  bool verify_existence_O(int line_check, int column_check, int check_diagonal1, 
+                            int check_diagonal2)
+{
+  bool result = false;
+
+  int suma[4] = {column_check, check_diagonal1, line_check, check_diagonal2};
+
+  const short checks_3[9] = {208, 209, 213, 210, 215, 211, 214, 207, 212};
+
+    int a,b;
+
+    for(a = 0; a < 4; a++)
+    {
+    
+      for(b = 0; b < 10; b++)
+          {
+          if(checks_3[b] == suma[a])
+            {
+              result = true;
+              
+              break;
+            }
+
+          }
+    }
+
+      return result;
+}
+
+  bool check_everything_empty (int line_check, int column_check, int check_diagonal1, 
+                            int check_diagonal2)
+{
+  bool result = false;
+
+  int suma[4] = {column_check, check_diagonal1, line_check, check_diagonal2};
+
+  const short checks_4[14] = {180, 186, 189, 178, 188, 187, 183, 185, 184, 192, 191, 182, 190, 181};
+
+  int a,b;
+
+    for(a = 0; a < 4; a++)
+    {
+              
+      for(b == 0; b < 14; b++)
+       {
+        if(checks_4[b] == suma[a])
+          {
+            result = true;
+            break; 
+          }
+        }
+    }
+
+   return result;             
+}
+
+  int reserve_decision()
+{
+    int result = 0;
+
+    result = rand() % 9; /// limita pana unde se vor crea numere randam
+
+   
+
+      return result;
+
+}
+
+
+   
